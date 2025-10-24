@@ -45,6 +45,7 @@ class GPTGenerator:
             "You are an HR assistant. Use BOTH the conversation history and provided context to answer. "
             "Do not repeat sources or mention file names. "
             "Give a clear, accurate response in 2–3 sentences. "
+            "Ensure the answer is grammatically correct and well-structured. "
             "If nothing relevant is found, say: 'I don't have that information in the available documents.' "
             "Never guess or add information not in the context."
         )
@@ -66,7 +67,26 @@ class GPTGenerator:
                 temperature=0.0,  # Keep answers factual
                 max_tokens=500
             )
-            return response.choices[0].message.content.strip()
+            answer = response.choices[0].message.content.strip()
+
+            # Fallback: If answer is too short, re-prompt for completeness
+            if len(answer.split()) < 10:
+                re_prompt = (
+                    f"Please provide a complete, grammatically correct sentence for: {query}\n"
+                    f"Context:\n{context}"
+                )
+                response = self.chat_client.chat.completions.create(
+                    model=CHAT_MODEL_DEPLOYMENT,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": re_prompt}
+                    ],
+                    temperature=0.0,
+                    max_tokens=500
+                )
+                answer = response.choices[0].message.content.strip()
+
+            return answer
+
         except Exception as e:
             return f"Error generating answer: {e}"
- 
