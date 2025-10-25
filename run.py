@@ -1,4 +1,4 @@
-from flask_app import create_app
+from rest_api import create_app
 
 app = create_app()
 
