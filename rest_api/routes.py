@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 import asyncio
 
-from retrieve_agent.retrieve_doc import DocumentRetriever
-from retrieve_agent.generator import generate_answer_agent  # Import the async function
+from retrieval.retrieve_doc import DocumentRetriever
+from retrieval.generator_agent import generate_answer_agent  # Import the async function
 
 api = Blueprint('api', __name__)
 
